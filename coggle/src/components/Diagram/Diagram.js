@@ -67,6 +67,14 @@ export default function App() {
                     position: { x: 0, y: 0 },
                     data: { label: (nodes.length + 1).toString() },
                     type: 'customResizer',
+                    style: {
+                        background: '#fff',
+                        fontSize: 12,
+                        border: '1px solid black',
+                        padding: 25,
+                        borderRadius: 15,
+                        height: 100,
+                      },
                 },
             ]);
         }}
