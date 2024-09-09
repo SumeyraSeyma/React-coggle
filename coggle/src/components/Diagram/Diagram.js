@@ -11,6 +11,7 @@ import {
  
 import '@xyflow/react/dist/style.css';
 import CustomResizerNode from './CustomResizerNode';
+import { text } from '@fortawesome/fontawesome-svg-core';
 const nodeTypes = { customResizer: CustomResizerNode };
 
  
@@ -20,14 +21,7 @@ const initialNodes = [
     position: { x: 0, y: 0 },
     type: 'customResizer', 
     data: { label: '1' },
-    style: {
-        background: '#fff',
-        fontSize: 12,
-        border: '1px solid black',
-        padding: 25,
-        borderRadius: 15,
-        height: 100,
-      },
+   
  },
 
   { 
@@ -35,14 +29,7 @@ const initialNodes = [
     position: { x: 0, y: 100 },
     type: 'customResizer',
     data: { label: '2' },
-    style: {
-        background: '#fff',
-        fontSize: 12,
-        border: '1px solid black',
-        padding: 25,
-        borderRadius: 15,
-        height: 100,
-      },
+    text:'text'
  },
 ];
 const initialEdges = [];
@@ -68,12 +55,15 @@ export default function App() {
                     data: { label: (nodes.length + 1).toString() },
                     type: 'customResizer',
                     style: {
-                        background: '#fff',
-                        fontSize: 12,
-                        border: '1px solid black',
-                        padding: 25,
-                        borderRadius: 15,
-                        height: 100,
+                        display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '200px', // Genişlik ayarı
+      height: '50px', // Yükseklik ayarı
+      border: '2px solid gray', // Kenarlık stili
+      borderRadius: '10px', // Kenar yuvarlaklığı
+      background: 'white', // Arka plan rengi
+      boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
                       },
                 },
             ]);
@@ -91,7 +81,7 @@ export default function App() {
       >
         <Controls />
         <MiniMap />
-        <Background variant="dots" gap={12} size={1} />
+        <Background gap={12} size={1} />
       </ReactFlow>
     </div>
   );

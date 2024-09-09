@@ -549,6 +549,14 @@ video {
   position: absolute;
 }
 
+.relative {
+  position: relative;
+}
+
+.flex {
+  display: flex;
+}
+
 .border {
   border-width: 1px;
 }

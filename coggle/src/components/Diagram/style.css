@@ -1,0 +1,13 @@
+.handle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    cursor: pointer; /* İkonun üzerine gelindiğinde cursor şeklini değiştir */
+  }
+  
+  .handle-icon svg {
+    fill: #000; /* İkon rengi */
+  }
+  
