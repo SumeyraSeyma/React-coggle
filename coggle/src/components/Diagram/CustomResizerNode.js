@@ -15,16 +15,39 @@ const CustomNode = ({ data, isConnectable }) => {
   const inputRef = useRef(null); // Input alanı için referans oluşturuyoruz
 
   const onChange = useCallback((evt) => {
+    const cursorPosition = evt.target.selectionStart;
     setNodeData((prevData) => ({
       ...prevData,
       label: evt.target.value,
     }));
+    requestAnimationFrame(() => {
+      inputRef.current.selectionStart = cursorPosition;
+      inputRef.current.selectionEnd = cursorPosition;
+    });
+
+    autoResizeTextarea();
   }, []);
+
+  const autoResizeTextarea = () => {
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+  }
+  };
+
+  const onFocus = () => {
+    autoResizeTextarea();
+  };
+
+  const onBlur = () => {
+    autoResizeTextarea(); // Odak kaybedildiğinde de boyutu koru
+  };
 
   // useEffect ile component yeniden render edildiğinde input'a odaklanmayı sağlıyoruz
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.focus(); // input alanına odaklan
+      inputRef.current.focus();
+      autoResizeTextarea();
     }
     const resizeObserver = new ResizeObserver(entries => {
       for (let entry of entries) {
@@ -32,6 +55,7 @@ const CustomNode = ({ data, isConnectable }) => {
         const fontSize = Math.max(16, width / 20); // Örnek olarak genişlik / 20 formülü kullanılmıştır
         inputRef.current.style.fontSize = `${fontSize}px`;
       }
+      
     });
 
     resizeObserver.observe(inputRef.current);
@@ -44,34 +68,14 @@ const CustomNode = ({ data, isConnectable }) => {
   const TextUpdater = memo(({ data, onChange }) => {
     const { label } = data;
     return (
-      <div className="node-wrapper" style={{
-        flexDirection: 'column',
-        background: '#FFF',
-        border: '1px solid #CCC',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-      }}>
-        <input 
-          ref={inputRef} // input alanına referansı ekliyoruz
-          type="text" 
-          value={label} 
-          onChange={onChange} 
-          className="nodrag" 
-          style={{
-            height: '100%',
-            width: '100%',
-            border: 'none',
-            textAlign: 'center',
-            fontStyle: 'italic',
-            whiteSpace:'pre-wrap',
-            overflow: 'hidden',
-          }} 
+      <div className="node-wrapper" >
+        <textarea 
+          ref={inputRef}
+          value={label}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onChange={onChange}
+          className="nodrag"
         />
       </div>
     );
@@ -115,7 +119,7 @@ function ResizeIcon() {
       fill="none"
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ position: 'absolute', right: 5, bottom: 5 }}
+      
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <polyline points="16 20 20 20 20 16" />
