@@ -21,6 +21,17 @@ const initialNodes = [
     position: { x: 0, y: 0 },
     type: 'customResizer', 
     data: { label: '1' },
+    style: {
+      display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '200px', // Genişlik ayarı
+                        height: '50px', // Yükseklik ayarı
+                        border: '2px solid gray', // Kenarlık stili
+                        borderRadius: '10px', // Kenar yuvarlaklığı
+                        background: 'white', // Arka plan rengi
+                        boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
+    }
    
  },
 
@@ -29,7 +40,18 @@ const initialNodes = [
     position: { x: 0, y: 100 },
     type: 'customResizer',
     data: { label: '2' },
-    text:'text'
+    text:'text',
+    style: {
+      display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '200px', // Genişlik ayarı
+                        height: '50px', // Yükseklik ayarı
+                        border: '2px solid gray', // Kenarlık stili
+                        borderRadius: '10px', // Kenar yuvarlaklığı
+                        background: 'white', // Arka plan rengi
+                        boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
+    },
  },
 ];
 const initialEdges = [];
@@ -56,14 +78,14 @@ export default function App() {
                     type: 'customResizer',
                     style: {
                         display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '200px', // Genişlik ayarı
-      height: '50px', // Yükseklik ayarı
-      border: '2px solid gray', // Kenarlık stili
-      borderRadius: '10px', // Kenar yuvarlaklığı
-      background: 'white', // Arka plan rengi
-      boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '200px', // Genişlik ayarı
+                        height: '50px', // Yükseklik ayarı
+                        border: '2px solid gray', // Kenarlık stili
+                        borderRadius: '10px', // Kenar yuvarlaklığı
+                        background: 'white', // Arka plan rengi
+                        boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
                       },
                 },
             ]);

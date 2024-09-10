@@ -32,6 +32,7 @@ const CustomNode = ({ data, isConnectable }) => {
     const { label } = data;
     return (
       <div className="node-wrapper" style={{
+        flexDirection: 'column',
         background: '#FFF',
         border: '1px solid #CCC',
         borderRadius: '8px',
@@ -39,9 +40,9 @@ const CustomNode = ({ data, isConnectable }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '200px',
-        height: '50px',
-        position: 'relative'
+        width: '100%',
+        height: '100%',
+        position: 'relative',
       }}>
         <input 
           ref={inputRef} // input alanına referansı ekliyoruz
@@ -50,9 +51,14 @@ const CustomNode = ({ data, isConnectable }) => {
           onChange={onChange} 
           className="nodrag" 
           style={{
-            width: '90%',
+            height: '100%',
+            width: '100%',
             border: 'none',
             textAlign: 'center',
+            fontStyle: 'italic',
+            whiteSpace:'pre-wrap',
+            overflow: 'hidden',
+            
           }} 
         />
       </div>
@@ -79,6 +85,7 @@ const CustomNode = ({ data, isConnectable }) => {
         >
           <FontAwesomeIcon icon={faCirclePlus} />
         </Handle>
+        
       ))}
     </>
   );
