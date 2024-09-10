@@ -11,7 +11,7 @@ import {
  
 import '@xyflow/react/dist/style.css';
 import CustomResizerNode from './CustomResizerNode';
-import { text } from '@fortawesome/fontawesome-svg-core';
+
 const nodeTypes = { customResizer: CustomResizerNode };
 
  

@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useRef, useEffect } from 'react';
 import { Handle, Position, NodeResizeControl } from '@xyflow/react';
 import './style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,17 +12,25 @@ const controlStyle = {
 
 const CustomNode = ({ data, isConnectable }) => {
   const [nodeData, setNodeData] = useState(data);
+  const inputRef = useRef(null); // Input alanı için referans oluşturuyoruz
 
   const onChange = useCallback((evt) => {
-    setNodeData({ ...nodeData, label: evt.target.value });
+    setNodeData((prevData) => ({
+      ...prevData,
+      label: evt.target.value,
+    }));
   }, []);
 
-  return (
-    <>
-      <NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
-        <ResizeIcon />
-      </NodeResizeControl>
+  // useEffect ile component yeniden render edildiğinde input'a odaklanmayı sağlıyoruz
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus(); // input alanına odaklan
+    }
+  }, [nodeData.label]); // label her değiştiğinde focus yeniden atanır
 
+  const TextUpdater = memo(({ data, onChange }) => {
+    const { label } = data;
+    return (
       <div className="node-wrapper" style={{
         background: '#FFF',
         border: '1px solid #CCC',
@@ -35,12 +43,29 @@ const CustomNode = ({ data, isConnectable }) => {
         height: '50px',
         position: 'relative'
       }}>
-        <input type="text" value={data.label} onChange={onChange} className="nodrag" style={{
-          width: '90%',
-          border: 'none',
-          textAlign: 'center',
-        }} />
+        <input 
+          ref={inputRef} // input alanına referansı ekliyoruz
+          type="text" 
+          value={label} 
+          onChange={onChange} 
+          className="nodrag" 
+          style={{
+            width: '90%',
+            border: 'none',
+            textAlign: 'center',
+          }} 
+        />
       </div>
+    );
+  });
+
+  return (
+    <>
+      <NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
+        <ResizeIcon />
+      </NodeResizeControl>
+
+      <TextUpdater data={nodeData} onChange={onChange} />
 
       {/* FontAwesome icons as handles around the node */}
       {['Left', 'Right', 'Top', 'Bottom'].map(pos => (
