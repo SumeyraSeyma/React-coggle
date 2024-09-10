@@ -26,6 +26,19 @@ const CustomNode = ({ data, isConnectable }) => {
     if (inputRef.current) {
       inputRef.current.focus(); // input alanına odaklan
     }
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const { width } = entry.contentRect;
+        const fontSize = Math.max(16, width / 20); // Örnek olarak genişlik / 20 formülü kullanılmıştır
+        inputRef.current.style.fontSize = `${fontSize}px`;
+      }
+    });
+
+    resizeObserver.observe(inputRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [nodeData.label]); // label her değiştiğinde focus yeniden atanır
 
   const TextUpdater = memo(({ data, onChange }) => {
@@ -58,7 +71,6 @@ const CustomNode = ({ data, isConnectable }) => {
             fontStyle: 'italic',
             whiteSpace:'pre-wrap',
             overflow: 'hidden',
-            
           }} 
         />
       </div>
