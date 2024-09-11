@@ -1,110 +1,44 @@
-import React, { useCallback } from 'react';
 import {
   ReactFlow,
-  MiniMap,
-  Controls,
-  Background,
+  ReactFlowProvider,
   useNodesState,
   useEdgesState,
-  addEdge,
 } from '@xyflow/react';
- 
 import '@xyflow/react/dist/style.css';
-import CustomResizerNode from './CustomResizerNode';
+import { GhostNode, useIncompleteEdge } from './useIncompleteEdge';
 
-const nodeTypes = { customResizer: CustomResizerNode };
+const nodeTypes = {
+  ghost: GhostNode,
+};
 
- 
 const initialNodes = [
-  { 
-    id: '1', 
-    position: { x: 0, y: 0 },
-    type: 'customResizer', 
-    data: { label: '1' },
-    style: {
-      display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '200px', // Genişlik ayarı
-                        height: '50px', // Yükseklik ayarı
-                        border: '2px solid gray', // Kenarlık stili
-                        borderRadius: '10px', // Kenar yuvarlaklığı
-                        background: 'white', // Arka plan rengi
-                        boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
-    }
-   
- },
-
-  { 
-    id: '2', 
-    position: { x: 0, y: 100 },
-    type: 'customResizer',
-    data: { label: '2' },
-    text:'text',
-    style: {
-      display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '200px', // Genişlik ayarı
-                        height: '50px', // Yükseklik ayarı
-                        border: '2px solid gray', // Kenarlık stili
-                        borderRadius: '10px', // Kenar yuvarlaklığı
-                        background: 'white', // Arka plan rengi
-                        boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
-    },
- },
+  { id: '0', type: 'input', data: { label: 'A' }, position: { x: 0, y: -100 } },
+  { id: '1', type: 'output', data: { label: 'B' }, position: { x: 0, y: 100 } },
 ];
-const initialEdges = [];
- 
-export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
- 
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
-  );
- 
+
+const IncompleteEdge = () => {
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const handlers = useIncompleteEdge();
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-        <button
-        onClick={() =>{
-            setNodes((nodes) => [
-                ...nodes,
-                {
-                    id: (nodes.length + 1).toString(),
-                    position: { x: 0, y: 0 },
-                    data: { label: (nodes.length + 1).toString() },
-                    type: 'customResizer',
-                    style: {
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '200px', // Genişlik ayarı
-                        height: '50px', // Yükseklik ayarı
-                        border: '2px solid gray', // Kenarlık stili
-                        borderRadius: '10px', // Kenar yuvarlaklığı
-                        background: 'white', // Arka plan rengi
-                        boxShadow: '0px 0px 10px rgba(0,0,0,0.1)' // Gölge efekti
-                      },
-                },
-            ]);
-        }}
-        >
-            Add Node
-        </button>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-      >
-        <Controls />
-        <MiniMap />
-        <Background gap={12} size={1} />
-      </ReactFlow>
+      nodes={nodes}
+      nodeTypes={nodeTypes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      fitView
+      {...handlers}
+    />
     </div>
+    
   );
-}
+};
+
+export default () => (
+  <ReactFlowProvider>
+    <IncompleteEdge />
+  </ReactFlowProvider>
+);

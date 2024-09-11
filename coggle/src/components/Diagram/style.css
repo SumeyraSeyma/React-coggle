@@ -29,6 +29,7 @@
 .nodrag {
     direction: ltr;
     width: 100%; /* Kenar çizgileri ve padding dikkate alınarak genişlik ayarı */
+    height: 100%; /* Kenar çizgileri ve padding dikkate alınarak yükseklik ayarı */
     word-wrap: break-word;
     white-space: pre-wrap;
     overflow: hidden;
