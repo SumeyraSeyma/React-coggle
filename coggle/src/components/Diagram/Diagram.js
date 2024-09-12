@@ -1,27 +1,151 @@
+import React, { useCallback } from 'react';
 import {
   ReactFlow,
-  ReactFlowProvider,
+  addEdge,
+  Background,
   useNodesState,
   useEdgesState,
+  reconnectEdge,
+  useReactFlow,
+  MarkerType,
+  ConnectionMode,
+  ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { GhostNode, useIncompleteEdge } from './useIncompleteEdge';
-import SimpleFloatingEdge from './SimpleFloatingEdge';
 
+
+
+import SimpleFloatingEdge from './SimpleFloatingEdge';
+import CustomNode from './CustomNode';
+import { GhostNode } from './CustomNode';
 
 import './index.css';
+const generateHandleId = (nodeId, handleType) => `${nodeId}-${handleType}`;
 
 const nodeTypes = {
   ghost: GhostNode,
+  custom: CustomNode,
 };
 
 const edgeTypes = {
   floating: SimpleFloatingEdge,
 };
 
+export function useIncompleteEdge() {
+  const { setNodes, setEdges, screenToFlowPosition } = useReactFlow();
+
+  const onConnect = useCallback(
+    (connection) => setEdges((edges) => addEdge(connection, edges)),
+    [setEdges],
+  );
+
+  const onConnectEnd = useCallback(
+    (event, connectionState) => {
+      console.log('onConnectEnd', connectionState);
+      console.log('fromHandle', connectionState.fromHandle);
+      if (
+        connectionState.isValid ||
+        connectionState.fromHandle.type === 'target'
+      ) {
+        console.log('Exiting on valid connection or target handle');
+        return;
+      }
+
+      const fromNodeId = connectionState.fromNode.id;
+      const id = `ghost-${Date.now()}`;
+      const { clientX, clientY } =
+        'changedTouches' in event ? event.changedTouches[0] : event;
+      const newNode = {
+        id,
+        type: 'ghost',
+        position: screenToFlowPosition({
+          x: clientX,
+          y: clientY,
+        }),
+        data: {},
+      };
+
+      console.log('New Ghost Node:', newNode);
+
+      const newEdge = {
+        id: `${fromNodeId}->${id}`,
+        source: fromNodeId,
+        target: id,
+        reconnectable: 'target',
+      };
+      console.log('New Edge:', newEdge);
+
+      setNodes((nodes) => nodes.concat(newNode));
+      setEdges((edges) => addEdge(newEdge, edges));
+    },
+    [setNodes, setEdges, screenToFlowPosition],
+  );
+
+  const onReconnect = useCallback(
+    (oldEdge, newConnection) =>
+      setEdges((edges) => reconnectEdge(oldEdge, newConnection, edges)),
+    [setEdges],
+  );
+
+  const onReconnectEnd = useCallback(
+    (_, oldEdge, handleType) => {
+      if (handleType === 'source') {
+        setNodes((nodes) => {
+          return nodes.filter((node) => {
+            const isGhost = node.type === 'ghost';
+            const isTarget = node.id === oldEdge.target;
+
+            return !(isGhost && isTarget);
+          });
+        });
+
+        setEdges((edges) => edges.filter((edge) => edge.id !== oldEdge.id));
+      }
+    },
+    [setNodes, setEdges],
+  );
+
+  const onEdgesDelete = useCallback(
+    (deletedEdges) => {
+      setNodes((nodes) => {
+        return deletedEdges.reduce(
+          (acc, edge) =>
+            acc.filter((n) => {
+              const isGhost = n.type === 'ghost';
+              const isSourceOrTarget =
+                n.id === edge.source || n.id === edge.target;
+
+              return !(isGhost && isSourceOrTarget);
+            }),
+          nodes,
+        );
+      });
+    },
+    [setNodes],
+  );
+
+  return {
+    onConnect,
+    onConnectEnd,
+    onReconnect,
+    onReconnectEnd,
+    onEdgesDelete,
+  };
+}
+
 const initialNodes = [
-  { id: '1', type: 'input', data: { label: 'A' }, position: { x: 0, y: -100 } },
-  { id: '2', type: 'output', data: { label: 'B' }, position: { x: 0, y: 100 } },
+  {
+    id: '1',
+    position: { x: 0, y: 0 },
+    data: { label: 'drag me around 😎' },
+    type: 'custom',
+  },
+  {
+    id: '2',
+    position: { x: 0, y: 150 },
+    data: { label: '...or me' },
+    type: 'custom',
+  },
 ];
 
 const initialEdges = [
@@ -29,8 +153,8 @@ const initialEdges = [
     id: '1-2',
     source: '1',
     target: '2',
-    sourceHandle: 'c',
-    targetHandle: 'a',
+    sourceHandle: generateHandleId('1', 'bottom'),
+    targetHandle: generateHandleId('2', 'top'),
     type: 'floating',
     markerEnd: { type: MarkerType.ArrowClosed },
   },
@@ -38,48 +162,55 @@ const initialEdges = [
 
 const fitViewOptions = { padding: 4 };
 
-const IncompleteEdge = () => {
+const NodeAsHandleFlow = () => {
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const handlers = useIncompleteEdge();
+  const generateHandleId = (nodeId, handleType) => `${nodeId}-${handleType}`;
 
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
+
+  const onConnect = useCallback((params) => {
+    console.log('onConnect');
+    console.log('Connecting with params:', params);
+    console.log('Source Handle:', params.sourceHandle);
+    console.log('Target Handle:', params.targetHandle);
+    setEdges((eds) =>
         addEdge(
-          {
-            ...params,
-            type: 'floating',
-            markerEnd: { type: MarkerType.Arrow },
-          },
-          eds,
+            {
+                ...params,
+                type: 'floating',
+                markerEnd: { type: MarkerType.Arrow },
+                sourceHandle: generateHandleId(params.source, 'sourceHandleType'), // Doğru kullanım: 'sourceHandleType' değil, gerçek handle tipi
+                targetHandle: generateHandleId(params.target, 'targetHandleType'), // Doğru kullanım: 'targetHandleType' değil, gerçek handle tipi
+            },
+            eds,
         ),
-      ),
-    [],
-  );
+    );
+}, [setEdges, generateHandleId]);
 
   return (
-    <div className='simple-floatingedges' style={{ width: '100vw', height: '100vh' }}>
+    <div style={{width: '100vw', height: '100vh'}} className="simple-floatingedges">
       <ReactFlow
-      nodes={nodes}
-      nodeTypes={nodeTypes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      edgeTypes={edgeTypes}
-      onConnect={onConnect}
-      connectionMode={ConnectionMode.Loose}
-      fitViewOptions={fitViewOptions}
-      fitView
-      {...handlers}
-    />
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        edgeTypes={edgeTypes}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={fitViewOptions}
+        connectionMode={ConnectionMode.Loose}
+        {...handlers}
+      >
+        <Background />
+      </ReactFlow>
     </div>
-    
   );
 };
 
 export default () => (
   <ReactFlowProvider>
-    <IncompleteEdge />
+    <NodeAsHandleFlow />
   </ReactFlowProvider>
 );
