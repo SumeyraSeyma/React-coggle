@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
+
 const generateHandleId = (id, position) => `${id}-${position}`;
 
 
@@ -15,7 +16,7 @@ export default memo(({ id, data,isConnectable }) => {
         {data.label}
         <Handle type="source" position={Position.Top} id={generateHandleId(id, 'top')} isConnectable={isConnectable} />
         <div>
-          <label style={{alignItems:'flex-start'}} htmlFor="text">Text:</label>
+          <label htmlFor="text">Text:</label>
         <input id="text"  placeholder='text' name="text" onChange={onChange} className="nodrag" />
       </div>
         <Handle type="source" position={Position.Right} id={generateHandleId(id, 'right')} isConnectable={isConnectable} />
