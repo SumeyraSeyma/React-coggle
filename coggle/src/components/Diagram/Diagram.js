@@ -15,6 +15,7 @@ import '@xyflow/react/dist/style.css';
 
 
 
+
 import SimpleFloatingEdge from './SimpleFloatingEdge';
 import CustomNode from './CustomNode';
 import { GhostNode } from './CustomNode';
@@ -29,6 +30,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   floating: SimpleFloatingEdge,
+
 };
 
 
@@ -51,6 +53,7 @@ export function useIncompleteEdge() {
         connectionState.fromHandle.type === 'target'
       ) {
         console.log('Exiting on valid connection or target handle');
+        connectionState.edgeTypes = 'floating';
         return;
       }
 
@@ -186,13 +189,14 @@ const NodeAsHandleFlow = () => {
                 ...params,
                 type: 'floating',
                 markerEnd: { type: MarkerType.Arrow },
-                sourceHandle: params.sourceHandle, // Doğrudan kullanım
-                targetHandle: params.targetHandle, // Doğrudan kullanım
+                sourceHandle: params.sourceHandle, 
+                targetHandle: params.targetHandle, 
             },
             eds,
         ),
     );
 }, [setEdges]);
+console.log('Edges:', edges);
 
 
 
