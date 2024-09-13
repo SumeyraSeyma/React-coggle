@@ -31,6 +31,8 @@ const edgeTypes = {
   floating: SimpleFloatingEdge,
 };
 
+
+
 export function useIncompleteEdge() {
   const { setNodes, setEdges, screenToFlowPosition } = useReactFlow();
 
@@ -38,6 +40,7 @@ export function useIncompleteEdge() {
     (connection) => setEdges((edges) => addEdge(connection, edges)),
     [setEdges],
   );
+  
 
   const onConnectEnd = useCallback(
     (event, connectionState) => {
@@ -123,6 +126,7 @@ export function useIncompleteEdge() {
     },
     [setNodes],
   );
+  
 
   return {
     onConnect,
@@ -137,14 +141,16 @@ const initialNodes = [
   {
     id: '1',
     position: { x: 0, y: 0 },
-    data: { label: 'drag me around 😎' },
+    data: { label: '2' },
     type: 'custom',
+    isConnectable: true,
   },
   {
     id: '2',
     position: { x: 0, y: 150 },
-    data: { label: '...or me' },
+    data: { label: '2' },
     type: 'custom',
+    isConnectable: true,
   },
 ];
 
@@ -180,13 +186,15 @@ const NodeAsHandleFlow = () => {
                 ...params,
                 type: 'floating',
                 markerEnd: { type: MarkerType.Arrow },
-                sourceHandle: generateHandleId(params.source, 'sourceHandleType'), // Doğru kullanım: 'sourceHandleType' değil, gerçek handle tipi
-                targetHandle: generateHandleId(params.target, 'targetHandleType'), // Doğru kullanım: 'targetHandleType' değil, gerçek handle tipi
+                sourceHandle: params.sourceHandle, // Doğrudan kullanım
+                targetHandle: params.targetHandle, // Doğrudan kullanım
             },
             eds,
         ),
     );
-}, [setEdges, generateHandleId]);
+}, [setEdges]);
+
+
 
   return (
     <div style={{width: '100vw', height: '100vh'}} className="simple-floatingedges">

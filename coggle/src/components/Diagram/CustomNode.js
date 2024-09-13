@@ -1,16 +1,26 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 const generateHandleId = (id, position) => `${id}-${position}`;
 
-export default memo(({ id, data }) => {
+
+
+export default memo(({ id, data,isConnectable }) => {
+  const onChange = useCallback((evt) => {
+    console.log('Node change', evt.target.value);
+    
+  }, []);
     return (
       <>
         {data.label}
-        <Handle type="source" position={Position.Top} id={generateHandleId(id, 'top')} />
-        <Handle type="source" position={Position.Right} id={generateHandleId(id, 'right')} />
-        <Handle type="source" position={Position.Bottom} id={generateHandleId(id, 'bottom')} />
-        <Handle type="source" position={Position.Left} id={generateHandleId(id, 'left')} />
+        <Handle type="source" position={Position.Top} id={generateHandleId(id, 'top')} isConnectable={isConnectable} />
+        <div>
+          <label style={{alignItems:'flex-start'}} htmlFor="text">Text:</label>
+        <input id="text"  placeholder='text' name="text" onChange={onChange} className="nodrag" />
+      </div>
+        <Handle type="source" position={Position.Right} id={generateHandleId(id, 'right')} isConnectable={isConnectable} />
+        <Handle type="source" position={Position.Bottom} id={generateHandleId(id, 'bottom')} isConnectable={isConnectable} />
+        <Handle type="source" position={Position.Left} id={generateHandleId(id, 'left')} isConnectable={isConnectable} />
       </>
     );
   });
